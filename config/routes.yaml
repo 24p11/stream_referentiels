@@ -2,6 +2,6 @@
 #    path: /
 #    controller: App\Controller\DefaultController::index
 
-index:
-  path: /
+demo:
+  path: /{version}/api/demo
   controller: App\Controller\TestController::page

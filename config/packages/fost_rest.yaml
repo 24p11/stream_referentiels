@@ -1,0 +1,7 @@
+fos_rest:
+  versioning: true
+  view:
+    view_response_listener:  true
+  format_listener:
+    rules:
+      - { path: ^/v[0-9]/api, prefer_extension: true, fallback_format: json, priorities: [ json ] }

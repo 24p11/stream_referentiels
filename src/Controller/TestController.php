@@ -3,13 +3,16 @@
 
 namespace App\Controller;
 
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use FOS\RestBundle\Controller\AbstractFOSRestController;
+use FOS\RestBundle\View\View;
 use Symfony\Component\HttpFoundation\Response;
 
-class TestController extends AbstractController
+class TestController extends AbstractFOSRestController
 {
-    public function page()
+
+    public function page(): View
     {
-        return $this->render('base.html.twig');
+        return View::create(["..."], Response::HTTP_OK);
     }
+
 }
