@@ -4,6 +4,7 @@
 namespace App\Controller\Admin;
 
 
+use App\Form\Admin\Referential\LoadForm;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 
 class ReferentialController extends AbstractController
@@ -15,6 +16,10 @@ class ReferentialController extends AbstractController
 
     public function load()
     {
-        return $this->render('admin/referential/load.html.twig');
+        $form = $this->createForm(LoadForm::class);
+
+        return $this->render('admin/referential/load.html.twig', [
+            'form' => $form->createView(),
+        ]);
     }
 }

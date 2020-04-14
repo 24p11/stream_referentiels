@@ -3,3 +3,7 @@ $primary: darken(#428bca, 40%);
 
 // the ~ allows you to reference things in node_modules
 @import "~bootstrap/dist/css/bootstrap.css";
+
+.custom-file-input ~ .custom-file-label::after {
+  content: "Choisir";
+}
