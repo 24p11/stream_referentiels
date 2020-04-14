@@ -1,0 +1,7 @@
+index:
+  path: /
+  controller: App\Controller\Admin\ReferentialController::index
+
+load:
+  path: /load
+  controller: App\Controller\Admin\ReferentialController::load

@@ -1,0 +1,7 @@
+demo:
+  path: /demo
+  controller: App\Controller\Api\ReferentialController::page
+
+test:
+  path: /test
+  controller: App\Controller\Api\ReferentialController::test

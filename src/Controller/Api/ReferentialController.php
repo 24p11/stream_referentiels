@@ -1,15 +1,15 @@
 <?php
 
 
-namespace App\Controller;
+namespace App\Controller\Api;
 
-use App\Entity\Xx;
+use App\Entity\Repositories;
 use FOS\RestBundle\Controller\AbstractFOSRestController;
 use FOS\RestBundle\Controller\Annotations\QueryParam;
 use FOS\RestBundle\View\View;
 use Symfony\Component\HttpFoundation\Response;
 
-class TestController extends AbstractFOSRestController
+class ReferentialController extends AbstractFOSRestController
 {
 
     /**
@@ -21,10 +21,11 @@ class TestController extends AbstractFOSRestController
     public function page($page): View
     {
         $product = $this->getDoctrine()
-            ->getRepository(Xx::class)
+            ->getRepository(Repositories::class)
             ->find($page);
 
         return View::create($product, Response::HTTP_OK);
     }
+
 
 }
