@@ -12,7 +12,7 @@ class LoadCsvServiceTest extends WebTestCase
         $client = self::createClient();
 
         // When
-        $client->request('GET', '/admin/referential/load');
+        $client->request('GET', '/admin/referential/load/XXX');
 
         // Then
         $this->assertEquals(200, $client->getResponse()->getStatusCode());

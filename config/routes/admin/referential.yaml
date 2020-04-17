@@ -2,6 +2,14 @@ index:
   path: /
   controller: App\Controller\Admin\ReferentialController::index
 
-load:
-  path: /load
+admin_referential_list:
+  path: list
+  controller: App\Controller\Admin\ReferentialController::list
+
+admin_referential_add:
+  path: add
+  controller: App\Controller\Admin\ReferentialController::add
+
+admin_referential_load:
+  path: /load/{referential}
   controller: App\Controller\Admin\ReferentialController::load
