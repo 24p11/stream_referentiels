@@ -5,7 +5,7 @@ namespace App\Service\Admin;
 
 
 use App\Entity\Repositories;
-use DateTime;
+use App\Util\ReferentialUtil;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\HttpFoundation\File\Exception\FileException;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
@@ -33,19 +33,14 @@ class LoadCsvService
                 $repositories = new Repositories();
                 $repositories->setRefId($item[0]);
                 $repositories->setLabel($item[1]);
-                $repositories->setStartDate(self::date($item[2]) ?? self::date());
-                $repositories->setEndDate(self::date($item[3]) ?? null);
+                $repositories->setStartDate(ReferentialUtil::date($item[2]) ?? ReferentialUtil::date());
+                $repositories->setEndDate(ReferentialUtil::date($item[3]) ?? null);
                 $repositories->setType($referential);
 
                 return $repositories;
             },
             $this->handleCsv($uploadedFile)
         );
-    }
-
-    private static function date($date = null)
-    {
-        return DateTime::createFromFormat('Y-m-d', $date ?? new \DateTime());
     }
 
     private function handleCsv(UploadedFile $uploadedFile): array

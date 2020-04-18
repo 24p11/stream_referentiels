@@ -7,7 +7,7 @@ use Doctrine\ORM\Mapping as ORM;
 /**
  * ReferentialTypes
  *
- * @ORM\Table(name="referential_types", indexes={@ORM\Index(name="created_at", columns={"created_at"}), @ORM\Index(name="type", columns={"type"}), @ORM\Index(name="updated_at", columns={"updated_at"})})
+ * @ORM\Table(name="referential_types", uniqueConstraints={@ORM\UniqueConstraint(name="type", columns={"type"})}, indexes={@ORM\Index(name="created_at", columns={"created_at"}), @ORM\Index(name="updated_at", columns={"updated_at"})})
  * @ORM\Entity
  */
 class ReferentialTypes
@@ -45,7 +45,7 @@ class ReferentialTypes
     /**
      * @var \DateTime
      *
-     * @ORM\Column(name="updated_at", type="datetime", nullable=false, columnDefinition="DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP")
+     * @ORM\Column(name="updated_at", type="datetime", nullable=false, options={"default"="CURRENT_TIMESTAMP"})
      */
     private $updatedAt;
 

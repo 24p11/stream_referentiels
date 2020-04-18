@@ -10,6 +10,10 @@ admin_referential_add:
   path: add
   controller: App\Controller\Admin\ReferentialController::add
 
+admin_referential_edit:
+  path: edit/{referential}
+  controller: App\Controller\Admin\ReferentialController::edit
+
 admin_referential_load:
   path: /load/{referential}
   controller: App\Controller\Admin\ReferentialController::load

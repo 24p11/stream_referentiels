@@ -47,6 +47,25 @@ class ReferentialController extends AbstractController
         ]);
     }
 
+    public function edit(Request $request, string $referential)
+    {
+        $em = $this->getDoctrine()->getManager();
+        $referential_type = $em->getRepository(ReferentialTypes::class)->findOneBy(['type' => $referential]);
+        $form = $this->createForm(AddReferentialType::class, $referential_type);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $em->persist($form->getData());
+            $em->flush();
+
+            return $this->redirect($this->generateUrl('admin_referential_list'));
+        }
+
+        return $this->render('admin/referential/edit.html.twig', [
+            'form' => $form->createView(),
+        ]);
+    }
+
     public function load(Request $request, LoadCsvService $loadCsvService, string $referential)
     {
         $form = $this->createForm(LoadReferentialType::class, new Repositories());
