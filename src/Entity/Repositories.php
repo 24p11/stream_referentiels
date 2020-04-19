@@ -7,7 +7,7 @@ use Doctrine\ORM\Mapping as ORM;
 /**
  * Repositories
  *
- * @ORM\Table(name="repositories", uniqueConstraints={@ORM\UniqueConstraint(name="reff_id_type", columns={"ref_id", "type"})}, indexes={@ORM\Index(name="created_at", columns={"created_at"}), @ORM\Index(name="end_date", columns={"end_date"}), @ORM\Index(name="ref_id", columns={"ref_id"}), @ORM\Index(name="score", columns={"score"}), @ORM\Index(name="start_date", columns={"start_date"}), @ORM\Index(name="type", columns={"type"}), @ORM\Index(name="updated_at", columns={"updated_at"})})
+ * @ORM\Table(name="repositories", uniqueConstraints={@ORM\UniqueConstraint(name="ref_id_type", columns={"ref_id", "type"})}, indexes={@ORM\Index(name="created_at", columns={"created_at"}), @ORM\Index(name="end_date", columns={"end_date"}), @ORM\Index(name="fk_repositories_referential_types1_idx", columns={"id"}), @ORM\Index(name="ref_id", columns={"ref_id"}), @ORM\Index(name="score", columns={"score"}), @ORM\Index(name="start_date", columns={"start_date"}), @ORM\Index(name="updated_at", columns={"updated_at"})})
  * @ORM\Entity
  */
 class Repositories
@@ -31,13 +31,6 @@ class Repositories
     /**
      * @var string
      *
-     * @ORM\Column(name="type", type="string", length=45, nullable=false)
-     */
-    private $type;
-
-    /**
-     * @var string
-     *
      * @ORM\Column(name="label", type="string", length=255, nullable=false)
      */
     private $label;
@@ -52,14 +45,14 @@ class Repositories
     /**
      * @var \DateTime
      *
-     * @ORM\Column(name="start_date", type="datetime", nullable=false)
+     * @ORM\Column(name="start_date", type="date", nullable=false)
      */
     private $startDate;
 
     /**
      * @var \DateTime|null
      *
-     * @ORM\Column(name="end_date", type="datetime", nullable=true)
+     * @ORM\Column(name="end_date", type="date", nullable=true)
      */
     private $endDate;
 
@@ -78,14 +71,23 @@ class Repositories
     private $updatedAt;
 
     /**
-     * Repositories constructor.
+     * @var \ReferentialTypes
+     *
+     * @ORM\ManyToOne(targetEntity="ReferentialTypes")
+     * @ORM\JoinColumns({
+     *   @ORM\JoinColumn(name="type", referencedColumnName="id")
+     * })
+     */
+    private $type;
+
+    /**
+     * ReferentialTypes constructor.
      */
     public function __construct()
     {
         $this->createdAt = new \DateTime();
         $this->updatedAt = new \DateTime();
     }
-
 
     public function getId(): ?int
     {
@@ -100,18 +102,6 @@ class Repositories
     public function setRefId(string $refId): self
     {
         $this->refId = $refId;
-
-        return $this;
-    }
-
-    public function getType(): ?string
-    {
-        return $this->type;
-    }
-
-    public function setType(string $type): self
-    {
-        $this->type = $type;
 
         return $this;
     }
@@ -184,6 +174,18 @@ class Repositories
     public function setUpdatedAt(\DateTimeInterface $updatedAt): self
     {
         $this->updatedAt = $updatedAt;
+
+        return $this;
+    }
+
+    public function getType(): ?ReferentialTypes
+    {
+        return $this->type;
+    }
+
+    public function setType(?ReferentialTypes $type): self
+    {
+        $this->type = $type;
 
         return $this;
     }

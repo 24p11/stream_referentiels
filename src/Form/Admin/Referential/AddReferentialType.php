@@ -16,7 +16,7 @@ class AddReferentialType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
-            ->add('type', TextType::class,
+            ->add('id', TextType::class,
                 [
                     'label' => 'Nom du réferentiel',
                 ]

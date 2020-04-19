@@ -4,6 +4,7 @@
 namespace App\Service\Admin;
 
 
+use App\Entity\ReferentialTypes;
 use App\Entity\Repositories;
 use App\Util\ReferentialUtil;
 use Psr\Log\LoggerInterface;
@@ -26,7 +27,7 @@ class LoadCsvService
         $this->uploadDirectory = $uploadDirectory;
     }
 
-    public function toRepositories(UploadedFile $uploadedFile, string $referential): array
+    public function toRepositories(UploadedFile $uploadedFile, ReferentialTypes $referential): array
     {
         return array_map(
             function ($item) use ($referential) {

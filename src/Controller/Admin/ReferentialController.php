@@ -50,7 +50,7 @@ class ReferentialController extends AbstractController
     public function edit(Request $request, string $referential)
     {
         $em = $this->getDoctrine()->getManager();
-        $referential_type = $em->getRepository(ReferentialTypes::class)->findOneBy(['type' => $referential]);
+        $referential_type = $em->getRepository(ReferentialTypes::class)->findOneBy(['id' => $referential]);
         $form = $this->createForm(AddReferentialType::class, $referential_type);
         $form->handleRequest($request);
 
@@ -75,8 +75,9 @@ class ReferentialController extends AbstractController
             $referential_csv = $form->get('csv')->getData();
 
             if ($referential_csv) {
-                $repositories = $loadCsvService->toRepositories($referential_csv, $referential);
                 $em = $this->getDoctrine()->getManager();
+                $referential_types = $em->getRepository(ReferentialTypes::class)->findOneBy(['id' => $referential]);
+                $repositories = $loadCsvService->toRepositories($referential_csv, $referential_types);
                 array_walk($repositories, [$em, 'persist']);
                 $em->flush();
             }

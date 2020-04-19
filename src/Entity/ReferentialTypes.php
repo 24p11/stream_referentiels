@@ -7,26 +7,19 @@ use Doctrine\ORM\Mapping as ORM;
 /**
  * ReferentialTypes
  *
- * @ORM\Table(name="referential_types", uniqueConstraints={@ORM\UniqueConstraint(name="type", columns={"type"})}, indexes={@ORM\Index(name="created_at", columns={"created_at"}), @ORM\Index(name="updated_at", columns={"updated_at"})})
+ * @ORM\Table(name="referential_types", indexes={@ORM\Index(name="created_at", columns={"created_at"}), @ORM\Index(name="updated_at", columns={"updated_at"})})
  * @ORM\Entity
  */
 class ReferentialTypes
 {
     /**
-     * @var int
-     *
-     * @ORM\Column(name="id", type="integer", nullable=false, options={"unsigned"=true})
-     * @ORM\Id
-     * @ORM\GeneratedValue(strategy="IDENTITY")
-     */
-    private $id;
-
-    /**
      * @var string
      *
-     * @ORM\Column(name="type", type="string", length=100, nullable=false)
+     * @ORM\Column(name="id", type="string", length=100, nullable=false)
+     * @ORM\Id
+     * @ORM\GeneratedValue(strategy="NONE")
      */
-    private $type;
+    private $id;
 
     /**
      * @var string|null
@@ -59,19 +52,14 @@ class ReferentialTypes
     }
 
 
-    public function getId(): ?int
+    public function getId(): ?string
     {
         return $this->id;
     }
 
-    public function getType(): ?string
+    public function setId(string $id): self
     {
-        return $this->type;
-    }
-
-    public function setType(string $type): self
-    {
-        $this->type = $type;
+        $this->id = $id;
 
         return $this;
     }
