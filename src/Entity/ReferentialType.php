@@ -7,10 +7,10 @@ use Doctrine\ORM\Mapping as ORM;
 /**
  * ReferentialTypes
  *
- * @ORM\Table(name="referential_types", indexes={@ORM\Index(name="created_at", columns={"created_at"}), @ORM\Index(name="updated_at", columns={"updated_at"})})
+ * @ORM\Table(name="referential_type", indexes={@ORM\Index(name="created_at", columns={"created_at"}), @ORM\Index(name="updated_at", columns={"updated_at"})})
  * @ORM\Entity
  */
-class ReferentialTypes
+class ReferentialType
 {
     /**
      * @var string

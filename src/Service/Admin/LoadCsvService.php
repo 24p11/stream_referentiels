@@ -4,8 +4,8 @@
 namespace App\Service\Admin;
 
 
-use App\Entity\ReferentialTypes;
-use App\Entity\Repositories;
+use App\Entity\Referential;
+use App\Entity\ReferentialType;
 use App\Util\ReferentialUtil;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\HttpFoundation\File\Exception\FileException;
@@ -27,16 +27,16 @@ class LoadCsvService
         $this->uploadDirectory = $uploadDirectory;
     }
 
-    public function toRepositories(UploadedFile $uploadedFile, ReferentialTypes $referential): array
+    public function toRepositories(UploadedFile $uploadedFile, ReferentialType $referentialType): array
     {
         return array_map(
-            function ($item) use ($referential) {
-                $repositories = new Repositories();
+            function ($item) use ($referentialType) {
+                $repositories = new Referential();
                 $repositories->setRefId($item[0]);
                 $repositories->setLabel($item[1]);
                 $repositories->setStartDate(ReferentialUtil::date($item[2]) ?? ReferentialUtil::date());
                 $repositories->setEndDate(ReferentialUtil::date($item[3]) ?? null);
-                $repositories->setType($referential);
+                $repositories->setType($referentialType);
 
                 return $repositories;
             },

@@ -3,7 +3,7 @@
 
 namespace App\Controller\Api;
 
-use App\Entity\Repositories;
+use App\Entity\Referential;
 use FOS\RestBundle\Controller\AbstractFOSRestController;
 use FOS\RestBundle\Controller\Annotations\QueryParam;
 use FOS\RestBundle\View\View;
@@ -21,7 +21,7 @@ class ReferentialController extends AbstractFOSRestController
     public function page($page): View
     {
         $product = $this->getDoctrine()
-            ->getRepository(Repositories::class)
+            ->getRepository(Referential::class)
             ->find($page);
 
         return View::create($product, Response::HTTP_OK);

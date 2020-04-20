@@ -4,8 +4,8 @@
 namespace App\Controller\Admin;
 
 
-use App\Entity\ReferentialTypes;
-use App\Entity\Repositories;
+use App\Entity\Referential;
+use App\Entity\ReferentialType;
 use App\Form\Admin\Referential\AddReferentialType;
 use App\Form\Admin\Referential\LoadReferentialType;
 use App\Service\Admin\LoadCsvService;
@@ -22,7 +22,7 @@ class ReferentialController extends AbstractController
     public function list()
     {
         $em = $this->getDoctrine()->getManager();
-        $repositories = $em->getRepository(ReferentialTypes::class)->findAll();
+        $repositories = $em->getRepository(ReferentialType::class)->findAll();
 
         return $this->render('admin/referential/list.html.twig', [
             'repositories' => $repositories,
@@ -31,7 +31,7 @@ class ReferentialController extends AbstractController
 
     public function add(Request $request)
     {
-        $form = $this->createForm(AddReferentialType::class, new ReferentialTypes());
+        $form = $this->createForm(AddReferentialType::class, new ReferentialType());
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
@@ -50,7 +50,7 @@ class ReferentialController extends AbstractController
     public function edit(Request $request, string $referential)
     {
         $em = $this->getDoctrine()->getManager();
-        $referential_type = $em->getRepository(ReferentialTypes::class)->findOneBy(['id' => $referential]);
+        $referential_type = $em->getRepository(ReferentialType::class)->findOneBy(['id' => $referential]);
         $form = $this->createForm(AddReferentialType::class, $referential_type);
         $form->handleRequest($request);
 
@@ -68,7 +68,7 @@ class ReferentialController extends AbstractController
 
     public function load(Request $request, LoadCsvService $loadCsvService, string $referential)
     {
-        $form = $this->createForm(LoadReferentialType::class, new Repositories());
+        $form = $this->createForm(LoadReferentialType::class, new Referential());
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
@@ -76,8 +76,9 @@ class ReferentialController extends AbstractController
 
             if ($referential_csv) {
                 $em = $this->getDoctrine()->getManager();
-                $referential_types = $em->getRepository(ReferentialTypes::class)->findOneBy(['id' => $referential]);
+                $referential_types = $em->getRepository(ReferentialType::class)->findOneBy(['id' => $referential]);
                 $repositories = $loadCsvService->toRepositories($referential_csv, $referential_types);
+                $repositories = $this->filterExistingReferential($referential, $repositories);
                 array_walk($repositories, [$em, 'persist']);
                 $em->flush();
             }
@@ -88,5 +89,21 @@ class ReferentialController extends AbstractController
         return $this->render('admin/referential/load.html.twig', [
             'form' => $form->createView(),
         ]);
+    }
+
+    private function filterExistingReferential(string $referential, array $repositories): array
+    {
+        $new_referential_ids = array_map(function (Referential $referential) {
+            return $referential->getRefId();
+        }, $repositories);
+        $old_referential_ids = $this->getDoctrine()->getRepository(Referential::class)
+            ->whereIn($referential, $new_referential_ids)
+            ->getQuery()
+            ->getResult();
+        $insert_referential_ids = array_diff($new_referential_ids, array_keys($old_referential_ids));
+
+        return array_filter($repositories, function (Referential $referential) use ($insert_referential_ids) {
+            return isset(array_flip($insert_referential_ids)[$referential->getRefId()]);
+        });
     }
 }

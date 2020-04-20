@@ -4,7 +4,7 @@
 namespace App\Form\Admin\Referential;
 
 
-use App\Entity\Repositories;
+use App\Entity\Referential;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\FileType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
@@ -37,7 +37,7 @@ class LoadReferentialType extends AbstractType
     {
         $resolver->setDefaults(
             [
-                'data_class' => Repositories::class,
+                'data_class' => Referential::class,
             ]
         );
     }

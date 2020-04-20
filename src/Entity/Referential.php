@@ -7,10 +7,10 @@ use Doctrine\ORM\Mapping as ORM;
 /**
  * Repositories
  *
- * @ORM\Table(name="repositories", uniqueConstraints={@ORM\UniqueConstraint(name="ref_id_type", columns={"ref_id", "type"})}, indexes={@ORM\Index(name="created_at", columns={"created_at"}), @ORM\Index(name="end_date", columns={"end_date"}), @ORM\Index(name="fk_repositories_referential_types1_idx", columns={"id"}), @ORM\Index(name="ref_id", columns={"ref_id"}), @ORM\Index(name="score", columns={"score"}), @ORM\Index(name="start_date", columns={"start_date"}), @ORM\Index(name="updated_at", columns={"updated_at"})})
- * @ORM\Entity
+ * @ORM\Table(name="referential", uniqueConstraints={@ORM\UniqueConstraint(name="ref_id_type", columns={"ref_id", "type"})}, indexes={@ORM\Index(name="created_at", columns={"created_at"}), @ORM\Index(name="end_date", columns={"end_date"}), @ORM\Index(name="fk_repositories_referential_types1_idx", columns={"id"}), @ORM\Index(name="ref_id", columns={"ref_id"}), @ORM\Index(name="score", columns={"score"}), @ORM\Index(name="start_date", columns={"start_date"}), @ORM\Index(name="updated_at", columns={"updated_at"})})
+ * @ORM\Entity(repositoryClass="App\Repository\ReferentialRepository")
  */
-class Repositories
+class Referential
 {
     /**
      * @var int
@@ -73,7 +73,7 @@ class Repositories
     /**
      * @var \ReferentialTypes
      *
-     * @ORM\ManyToOne(targetEntity="ReferentialTypes")
+     * @ORM\ManyToOne(targetEntity="ReferentialType")
      * @ORM\JoinColumns({
      *   @ORM\JoinColumn(name="type", referencedColumnName="id")
      * })
@@ -178,12 +178,12 @@ class Repositories
         return $this;
     }
 
-    public function getType(): ?ReferentialTypes
+    public function getType(): ?ReferentialType
     {
         return $this->type;
     }
 
-    public function setType(?ReferentialTypes $type): self
+    public function setType(?ReferentialType $type): self
     {
         $this->type = $type;
 
