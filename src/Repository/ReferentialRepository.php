@@ -9,12 +9,6 @@ use Doctrine\ORM\QueryBuilder;
 use Doctrine\Persistence\ManagerRegistry;
 use Transliterator;
 
-/**
- * @method Referential|null find($id, $lockMode = null, $lockVersion = null)
- * @method Referential|null findOneBy(array $criteria, array $orderBy = null)
- * @method Referential[]    findAll()
- * @method Referential[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
- */
 class ReferentialRepository extends ServiceEntityRepository
 {
     public function __construct(ManagerRegistry $registry)
@@ -31,7 +25,7 @@ class ReferentialRepository extends ServiceEntityRepository
             ->setParameter('ids', $ids);
     }
 
-    public function fullTextSearch(string $search_text): array
+    public function fullTextSearch(string $referential, string $search_text): array
     {
 
         $transliterator = Transliterator::create('NFD; [:Nonspacing Mark:] Remove; NFC;');
@@ -45,12 +39,18 @@ class ReferentialRepository extends ServiceEntityRepository
         // $referential_table_name = get_class(Referential::class);
         $sql = "
             SELECT * FROM referential
-            WHERE MATCH (ref_id,label) AGAINST (:searching IN BOOLEAN MODE)
+            WHERE `type` = ?
+            AND MATCH (ref_id,label) AGAINST (? IN BOOLEAN MODE)
+            ORDER BY score DESC
+            LIMIT 250
         ";
 
         try {
             $statement = $this->getEntityManager()->getConnection()->prepare($sql);
-            $statement->execute(['searching' => $searching]);
+            $statement->execute([
+                $referential,
+                $searching
+            ]);
             return $statement->fetchAll();
         } catch (DBALException $e) {
             dump($e);
