@@ -10,7 +10,7 @@ use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 
-class AddReferentialType extends AbstractType
+class AddType extends AbstractType
 {
 
     public function buildForm(FormBuilderInterface $builder, array $options)

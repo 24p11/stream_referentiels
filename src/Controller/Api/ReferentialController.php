@@ -20,7 +20,7 @@ class ReferentialController extends AbstractFOSRestController
      * @param string $search
      * @return View
      */
-    public function page($type, $search): View
+    public function referential($type, $search): View
     {
         $repositories = $this->getDoctrine()
             ->getRepository(Referential::class)

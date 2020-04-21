@@ -1,9 +1,0 @@
-{% extends 'base.admin.html.twig' %}
-{% block body %}
-    <a href="{{ url('admin_referential_edit', {'referential': app.request.get('referential')}) }}">
-        Editer {{ app.request.get('referential') }}
-    </a>
-    <br>
-    <br>
-    {{ form(form) }}
-{% endblock %}

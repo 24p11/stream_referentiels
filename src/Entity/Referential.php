@@ -190,5 +190,8 @@ class Referential
         return $this;
     }
 
-
+    public function __toString()
+    {
+        return "";
+    }
 }

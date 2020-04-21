@@ -8,13 +8,18 @@
     <br>
     <br>
     <div class="list-group">
-        <span class="list-group-item active text-center">
-            Référentiels
-        </span>
+        {% if repositories %}
+            <span class="list-group-item active text-center">
+                Référentiels
+            </span>
+        {% endif %}
         {% for referential in repositories %}
             <a class="list-group-item list-group-item-action"
-               href="{{ url('admin_referential_load', {'referential': referential.type}) }}">
-                {{ referential.type }} (<span class="font-weight-light">{{ referential.description }}</span>)
+               href="{{ url('admin_referential_manage', {'referential': referential.id}) }}">
+                {{ referential.id }}
+                {% if referential.description %}
+                    (<span class="font-weight-light">{{ referential.description }}</span>)
+                {% endif %}
             </a>
         {% endfor %}
     </div>

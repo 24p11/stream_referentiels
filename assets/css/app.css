@@ -1,0 +1,6 @@
+@import "~bootstrap/dist/css/bootstrap.css";
+.custom-file-input ~ .custom-file-label::after {
+  content: "Choisir";
+}
+
+/*# sourceMappingURL=app.css.map */

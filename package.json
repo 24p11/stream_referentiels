@@ -1,9 +1,13 @@
 {
   "devDependencies": {
     "@symfony/webpack-encore": "^0.28.3",
+    "axios": "^0.19.2",
     "bootstrap": "^4.4.1",
     "core-js": "^3.6.5",
     "regenerator-runtime": "^0.13.2",
+    "vue": "^2.6.11",
+    "vue-loader": "15.0.11",
+    "vue-template-compiler": "^2.6.11",
     "webpack-notifier": "^1.6.0"
   },
   "license": "UNLICENSED",
@@ -12,6 +16,7 @@
     "dev-server": "encore dev-server",
     "dev": "encore dev",
     "watch": "encore dev --watch",
+    "hot": "encore dev-server --hot",
     "build": "encore production --progress"
   },
   "dependencies": {

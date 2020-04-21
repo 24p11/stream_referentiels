@@ -6,8 +6,9 @@ namespace App\Controller\Admin;
 
 use App\Entity\Referential;
 use App\Entity\ReferentialType;
-use App\Form\Admin\Referential\AddReferentialType;
-use App\Form\Admin\Referential\LoadReferentialType;
+use App\Form\Admin\Referential\AddType;
+use App\Form\Admin\Referential\LoadType;
+use App\Form\Admin\Referential\QyeryType;
 use App\Service\Admin\LoadCsvService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -31,7 +32,7 @@ class ReferentialController extends AbstractController
 
     public function add(Request $request)
     {
-        $form = $this->createForm(AddReferentialType::class, new ReferentialType());
+        $form = $this->createForm(AddType::class, new ReferentialType());
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
@@ -51,7 +52,7 @@ class ReferentialController extends AbstractController
     {
         $em = $this->getDoctrine()->getManager();
         $referential_type = $em->getRepository(ReferentialType::class)->findOneBy(['id' => $referential]);
-        $form = $this->createForm(AddReferentialType::class, $referential_type);
+        $form = $this->createForm(AddType::class, $referential_type);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
@@ -66,9 +67,18 @@ class ReferentialController extends AbstractController
         ]);
     }
 
+    public function manage()
+    {
+        $form = $this->createForm(LoadType::class, new Referential());
+
+        return $this->render('admin/referential/manage.html.twig', [
+            'form' => $form->createView(),
+        ]);
+    }
+
     public function load(Request $request, LoadCsvService $loadCsvService, string $referential)
     {
-        $form = $this->createForm(LoadReferentialType::class, new Referential());
+        $form = $this->createForm(LoadType::class, new Referential());
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
@@ -83,12 +93,10 @@ class ReferentialController extends AbstractController
                 $em->flush();
             }
 
-            return $this->redirect($this->generateUrl('admin_referential_load', ['referential' => $referential]));
+
         }
 
-        return $this->render('admin/referential/load.html.twig', [
-            'form' => $form->createView(),
-        ]);
+        return $this->redirect($this->generateUrl('admin_referential_details', ['referential' => $referential]));
     }
 
     private function filterExistingReferential(string $referential, array $repositories): array
@@ -105,5 +113,12 @@ class ReferentialController extends AbstractController
         return array_filter($repositories, function (Referential $referential) use ($insert_referential_ids) {
             return isset(array_flip($insert_referential_ids)[$referential->getRefId()]);
         });
+    }
+
+    public function details(Request $request, string $referential)
+    {
+        return $this->render('admin/referential/details.html.twig', [
+            'search_api' => $this->generateUrl('referential', ['version' => $this->getParameter('referential.api_version')])
+        ]);
     }
 }
