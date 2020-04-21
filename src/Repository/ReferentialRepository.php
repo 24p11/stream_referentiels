@@ -25,7 +25,7 @@ class ReferentialRepository extends ServiceEntityRepository
             ->setParameter('ids', $ids);
     }
 
-    public function fullTextSearch(string $referential, string $search_text): array
+    public function fullTextSearch(string $type, string $search_text): array
     {
 
         $transliterator = Transliterator::create('NFD; [:Nonspacing Mark:] Remove; NFC;');
@@ -48,7 +48,7 @@ class ReferentialRepository extends ServiceEntityRepository
         try {
             $statement = $this->getEntityManager()->getConnection()->prepare($sql);
             $statement->execute([
-                $referential,
+                $type,
                 $searching
             ]);
             return $statement->fetchAll();
