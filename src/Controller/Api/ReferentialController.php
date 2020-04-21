@@ -13,18 +13,18 @@ class ReferentialController extends AbstractFOSRestController
 {
 
     /**
-     * @QueryParam(name="page", requirements="\d+", default="0", description="Page of the overview.")
-     * @QueryParam(name="search", requirements="\D+", default="", description="Page of the overview.")
+     * @QueryParam(name="referential", description="Referential", allowBlank=false)
+     * @QueryParam(name="search", description="Search in referential")
      *
-     * @param integer $page
+     * @param string $referential
      * @param string $search
      * @return View
      */
-    public function page($page, $search): View
+    public function page($referential, $search): View
     {
         $product = $this->getDoctrine()
             ->getRepository(Referential::class)
-            ->fullTextSearch($search);
+            ->fullTextSearch($referential, $search);
 
         return View::create($product, Response::HTTP_OK);
     }
