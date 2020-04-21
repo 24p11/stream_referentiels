@@ -2,20 +2,21 @@
 
 namespace App\Tests\Service\Admin;
 
+use App\Entity\ReferentialType;
+use Doctrine\ORM\ORMException;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
-class LoadCsvServiceTest extends WebTestCase
+class client extends WebTestCase
 {
+    private $client;
+
     public function testToRepositories()
     {
-        // Given
-        $client = self::createClient();
-
         // When
-        $client->request('GET', '/admin/referential/load/XXX');
+        $this->client->request('GET', '/admin/referential/load/XXX');
 
         // Then
-        $this->assertEquals(200, $client->getResponse()->getStatusCode());
+        $this->assertEquals(200, $this->client->getResponse()->getStatusCode());
 
         // Given
         $form_data = [
@@ -23,9 +24,30 @@ class LoadCsvServiceTest extends WebTestCase
         ];
 
         // When
-        $client->submitForm('load_referential[save]', $form_data);
+        $this->client->submitForm('load_referential[save]', $form_data);
 
         // Then
-        $this->assertEquals(302, $client->getResponse()->getStatusCode());
+        $this->assertEquals(302, $this->client->getResponse()->getStatusCode());
+    }
+
+    protected function setUp(): void
+    {
+        $this->client = self::createClient();
+        $this->loadData();
+
+        parent::setUp();
+    }
+
+    private function loadData()
+    {
+        try {
+            $em = $this->client->getContainer()->get('doctrine.orm.entity_manager');
+            $em->persist((new ReferentialType())
+                ->setId('XXX')
+                ->setDescription('Test'));
+            $em->flush();
+        } catch (ORMException $e) {
+            dump($e);
+        }
     }
 }

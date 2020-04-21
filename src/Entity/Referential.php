@@ -7,7 +7,7 @@ use Doctrine\ORM\Mapping as ORM;
 /**
  * Repositories
  *
- * @ORM\Table(name="referential", uniqueConstraints={@ORM\UniqueConstraint(name="ref_id_type", columns={"ref_id", "type"})}, indexes={@ORM\Index(name="created_at", columns={"created_at"}), @ORM\Index(name="end_date", columns={"end_date"}), @ORM\Index(name="fk_repositories_referential_types1_idx", columns={"id"}), @ORM\Index(name="ref_id", columns={"ref_id"}), @ORM\Index(name="score", columns={"score"}), @ORM\Index(name="start_date", columns={"start_date"}), @ORM\Index(name="updated_at", columns={"updated_at"})})
+ * @ORM\Table(name="referential", uniqueConstraints={@ORM\UniqueConstraint(name="ref_id_type", columns={"ref_id", "type"})}, indexes={@ORM\Index(name="created_at", columns={"created_at"}), @ORM\Index(name="ref_id_label", columns={"ref_id", "label"}, flags={"fulltext"}), @ORM\Index(name="end_date", columns={"end_date"}), @ORM\Index(name="fk_repositories_referential_types1_idx", columns={"id"}), @ORM\Index(name="ref_id", columns={"ref_id"}), @ORM\Index(name="score", columns={"score"}), @ORM\Index(name="start_date", columns={"start_date"}), @ORM\Index(name="updated_at", columns={"updated_at"})})
  * @ORM\Entity(repositoryClass="App\Repository\ReferentialRepository")
  */
 class Referential
