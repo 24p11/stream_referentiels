@@ -40,6 +40,7 @@ class ReferentialRepository extends ServiceEntityRepository
         $sql = "
             SELECT * FROM referential
             WHERE `type` = ?
+            AND CURDATE() BETWEEN start_date AND IFNULL(end_date, CURDATE())
             AND MATCH (ref_id,label) AGAINST (? IN BOOLEAN MODE)
             ORDER BY score DESC
             LIMIT 250
