@@ -117,8 +117,6 @@ class ReferentialController extends AbstractController
 
     public function details(Request $request, string $referential)
     {
-        return $this->render('admin/referential/details.html.twig', [
-            'search_api' => $this->generateUrl('referential', ['version' => $this->getParameter('referential.api_version')])
-        ]);
+        return $this->render('admin/referential/details.html.twig');
     }
 }

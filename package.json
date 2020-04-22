@@ -16,11 +16,12 @@
     "dev-server": "encore dev-server",
     "dev": "encore dev",
     "watch": "encore dev --watch",
-    "hot": "encore dev-server --hot",
+    "hot": "encore dev-server --hot --disableHostCheck=true",
     "build": "encore production --progress"
   },
   "dependencies": {
     "jquery": "^3.4.1",
+    "lodash.debounce": "^4.0.8",
     "popper.js": "^1.16.1"
   }
 }
