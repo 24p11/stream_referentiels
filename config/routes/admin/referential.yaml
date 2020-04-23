@@ -1,4 +1,4 @@
-index:
+admin_referential_index:
   path: /
   controller: App\Controller\Admin\ReferentialController::index
 

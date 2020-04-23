@@ -23,3 +23,7 @@ yarn-error.log
 .phpunit.result.cache
 /phpunit.xml
 ###< symfony/phpunit-bridge ###
+/assets/css/*.map
+/package-lock.json
+/bin/phpunit
+/assets/css/*.map
