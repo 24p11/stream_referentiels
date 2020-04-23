@@ -18,7 +18,7 @@ class AddType extends AbstractType
         $builder
             ->add('id', TextType::class,
                 [
-                    'label' => 'Nom du réferentiel',
+                    'label' => 'Nom du référentiel',
                 ]
             )
             ->add('description', TextareaType::class,

@@ -1,0 +1,14 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+    <br>
+    <div class="jumbotron jumbotron-fluid text-center">
+        <div class="container">
+            <h1>Référentiel APHP</h1>
+            <img src="{{ asset('build/images/logos.png') }}" alt="Referential logo">
+            <div>
+                <a href="{{ path('admin_referential_index') }}">Administration des référentiels</a>
+            </div>
+        </div>
+    </div>
+{% endblock %}
