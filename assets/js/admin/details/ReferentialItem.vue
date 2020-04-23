@@ -1,5 +1,5 @@
 <template>
-    <fragment>
+    <div style="display: contents">
         <tr>
             <th scope="row">{{referential.id}}</th>
             <td>{{referential.ref_id}}</td>
@@ -8,20 +8,15 @@
             <td>{{referential.end_date}}</td>
             <td @click="display"><p :class="hasMetadata">Afficher</p></td>
         </tr>
-        <tr :key="referential.id" v-show="show">
+        <tr v-show="show">
             <td class="no-padding" colspan="6">
                 <pre v-highlightjs><code class="json">{{referential.metadata}}</code></pre>
             </td>
         </tr>
-    </fragment>
+    </div>
 </template>
 
 <script>
-    import Vue from 'vue'
-    import Fragment from 'vue-fragment'
-
-    Vue.use(Fragment.Plugin)
-
     export default {
         name: 'ReferentialItem',
         props: ['referential'],

@@ -18,7 +18,7 @@
             <td><span class="badge badge-warning">Pas de résultats</span></td>
         </tr>
         <template v-for="referential in repositories">
-            <ReferentialItem :referential="referential"></ReferentialItem>
+            <ReferentialItem :referential="referential"/>
         </template>
         </tbody>
     </table>
