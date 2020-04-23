@@ -13,7 +13,7 @@
             Détails
         </a>
         <div class="list-group-item list-group-item-action">
-            {{ form(form) }}
+            {{ form(form, {'action': path('admin_referential_load', {'referential': app.request.get('referential')})}) }}
         </div>
     </div>
 {% endblock %}

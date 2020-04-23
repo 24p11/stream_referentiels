@@ -38,11 +38,19 @@ class ReferentialRepository extends ServiceEntityRepository
         // TODO
         // $referential_table_name = get_class(Referential::class);
         $sql = "
-            SELECT * FROM referential
-            WHERE `type` = ?
-            AND CURDATE() BETWEEN start_date AND IFNULL(end_date, CURDATE())
-            AND MATCH (ref_id,label) AGAINST (? IN BOOLEAN MODE)
-            ORDER BY score DESC
+            SELECT *, 
+            r.id as id,
+            r.start_date as referential_start_date, 
+            r.end_date as referential_end_date, 
+            r.created_at as referential_created_at, 
+            r.updated_at as referential_updated_at
+            FROM referential r
+            LEFT JOIN metadata m 
+            ON m.referential_id = r.id AND CURDATE() BETWEEN m.start_date AND IFNULL(m.end_date, CURDATE())
+            WHERE r.`type` = ?
+            AND CURDATE() BETWEEN r.start_date AND IFNULL(r.end_date, CURDATE())
+            AND MATCH (r.ref_id, r.label) AGAINST (? IN BOOLEAN MODE)
+            ORDER BY r.score DESC
             LIMIT 250
         ";
 
@@ -52,7 +60,11 @@ class ReferentialRepository extends ServiceEntityRepository
                 $type,
                 $searching
             ]);
-            return $statement->fetchAll();
+
+            $repositories = $statement->fetchAll();
+            return array_values(array_reduce($repositories, function (array $accumulator, array $referential) {
+                return $this->groupByRefId($accumulator, $referential);
+            }, []));
         } catch (DBALException $e) {
             dump($e);
         }
@@ -72,5 +84,40 @@ class ReferentialRepository extends ServiceEntityRepository
         }
 
         return null;
+    }
+
+    private function groupByRefId(array $accumulator, array $referential)
+    {
+        $referential_key = $referential['ref_id'];
+        $metadata_key = 'metadata';
+        if (isset($accumulator[$referential_key])) {
+            $accumulator[$referential_key][$metadata_key][] = [
+                $referential['entry'] => $referential['value'],
+                'start_date' => $referential['start_date'],
+                'end_date' => $referential['end_date'],
+            ];
+        } else {
+            $accumulator[$referential_key] = [
+                'id' => $referential['id'],
+                'type' => $referential['type'],
+                'ref_id' => $referential_key,
+                'label' => $referential['label'],
+                'start_date' => $referential['referential_start_date'],
+                'end_date' => $referential['referential_end_date'],
+                'created_at' => $referential['referential_created_at'],
+                'updated_at' => $referential['referential_updated_at'],
+            ];
+
+            // If metadata
+            if ($referential['entry']) {
+                $accumulator[$referential_key][$metadata_key][] = [
+                    $referential['entry'] => $referential['value'],
+                    'start_date' => $referential['start_date'],
+                    'end_date' => $referential['end_date'],
+                ];
+            }
+        }
+
+        return $accumulator;
     }
 }

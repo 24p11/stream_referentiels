@@ -8,6 +8,7 @@
                 required="required"
                 type="search"
                 v-model="searchTerm">
+        <br>
         <Result :noResult="noResult" :perform-search="performSearch" :repositories="repositories"/>
     </div>
 </template>

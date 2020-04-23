@@ -7,6 +7,7 @@
             <th scope="col">Label</th>
             <th scope="col">Date de début</th>
             <th scope="col">Date de fin</th>
+            <th scope="col">Metadata</th>
         </tr>
         </thead>
         <tbody>
@@ -16,20 +17,21 @@
         <tr v-if="noResult">
             <td><span class="badge badge-warning">Pas de résultats</span></td>
         </tr>
-        <tr v-for="referential in repositories">
-            <th scope="row">{{referential.id}}</th>
-            <td>{{referential.ref_id}}</td>
-            <td>{{referential.label}}</td>
-            <td>{{referential.start_date}}</td>
-            <td>{{referential.end_date}}</td>
-        </tr>
+        <template v-for="referential in repositories">
+            <ReferentialItem :referential="referential"></ReferentialItem>
+        </template>
         </tbody>
     </table>
 </template>
 
 <script>
+    import ReferentialItem from "./ReferentialItem";
+
     export default {
-        props: ['repositories', 'performSearch', 'noResult']
+        props: ['repositories', 'performSearch', 'noResult'],
+        components: {
+            ReferentialItem
+        }
     }
 </script>
 

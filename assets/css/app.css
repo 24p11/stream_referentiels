@@ -1,6 +1,10 @@
 @import "~bootstrap/dist/css/bootstrap.css";
+@import "~highlight.js/styles/default.css";
+@import "~highlight.js/styles/vs.css";
+
+
 .custom-file-input ~ .custom-file-label::after {
-  content: "Choisir";
+    content: "Choisir";
 }
 
 /*# sourceMappingURL=app.css.map */

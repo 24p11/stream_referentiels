@@ -4,7 +4,12 @@
     <div id="details"></div>
 {% endblock %}
 
+{% block stylesheets %}
+    {{ parent() }}
+    {{ encore_entry_link_tags('details') }}
+{% endblock %}
 {% block javascripts %}
+    {{ parent() }}
     <script>
         const type = "{{ app.request.get('referential') }}";
     </script>

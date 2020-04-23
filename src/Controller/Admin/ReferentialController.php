@@ -83,7 +83,6 @@ class ReferentialController extends AbstractController
 
         if ($form->isSubmitted() && $form->isValid()) {
             $referential_csv = $form->get('csv')->getData();
-
             if ($referential_csv) {
                 $em = $this->getDoctrine()->getManager();
                 $referential_types = $em->getRepository(ReferentialType::class)->findOneBy(['id' => $referential]);
@@ -92,8 +91,6 @@ class ReferentialController extends AbstractController
                 array_walk($repositories, [$em, 'persist']);
                 $em->flush();
             }
-
-
         }
 
         return $this->redirect($this->generateUrl('admin_referential_details', ['referential' => $referential]));
