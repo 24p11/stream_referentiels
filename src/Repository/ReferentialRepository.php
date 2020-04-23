@@ -25,7 +25,7 @@ class ReferentialRepository extends ServiceEntityRepository
             ->setParameter('ids', $ids);
     }
 
-    public function fullTextSearch(string $type, string $search_text): array
+    public function fullTextSearch(string $type, string $search_text, string $start_date, string $end_date): array
     {
 
         $transliterator = Transliterator::create('NFD; [:Nonspacing Mark:] Remove; NFC;');
@@ -37,6 +37,13 @@ class ReferentialRepository extends ServiceEntityRepository
 
         // TODO
         // $referential_table_name = get_class(Referential::class);
+        $has_date = !empty($start_date) && !empty($end_date);
+        $metadata_date_condition = $has_date
+            ? "(m.start_date >= '$start_date' AND IFNULL(m.end_date, CURDATE()) <= '$end_date')"
+            : 'CURDATE() BETWEEN m.start_date AND IFNULL(m.end_date, CURDATE())';
+        $referential_date_condition = $has_date
+            ? "(r.start_date >= '$start_date' AND IFNULL(r.end_date, CURDATE()) <= '$end_date')"
+            : "CURDATE() BETWEEN r.start_date AND IFNULL(r.end_date, CURDATE())";
         $sql = "
             SELECT *, 
             r.id as id,
@@ -46,10 +53,10 @@ class ReferentialRepository extends ServiceEntityRepository
             r.updated_at as referential_updated_at
             FROM referential r
             LEFT JOIN metadata m 
-            ON m.referential_id = r.id AND CURDATE() BETWEEN m.start_date AND IFNULL(m.end_date, CURDATE())
-            WHERE r.`type` = ?
-            AND CURDATE() BETWEEN r.start_date AND IFNULL(r.end_date, CURDATE())
-            AND MATCH (r.ref_id, r.label) AGAINST (? IN BOOLEAN MODE)
+            ON m.referential_id = r.id AND $metadata_date_condition
+            WHERE r.`type` = :type
+            AND $referential_date_condition
+            AND MATCH (r.ref_id, r.label) AGAINST (:searching IN BOOLEAN MODE)
             ORDER BY r.score DESC
             LIMIT 250
         ";
@@ -57,8 +64,8 @@ class ReferentialRepository extends ServiceEntityRepository
         try {
             $statement = $this->getEntityManager()->getConnection()->prepare($sql);
             $statement->execute([
-                $type,
-                $searching
+                'type' => $type,
+                'searching' => $searching,
             ]);
 
             $repositories = $statement->fetchAll();
