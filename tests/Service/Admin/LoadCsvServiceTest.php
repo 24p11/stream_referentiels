@@ -13,18 +13,18 @@ class client extends WebTestCase
     public function testToRepositories()
     {
         // When
-        $this->client->request('GET', '/admin/referential/load/XXX');
+        $this->client->request('GET', '/admin/referential/manage/XXX');
 
         // Then
         $this->assertEquals(200, $this->client->getResponse()->getStatusCode());
 
         // Given
         $form_data = [
-            'load_referential[csv]' => 'tests/data/in/referential.csv'
+            'load[csv]' => 'tests/data/in/referential.csv'
         ];
 
         // When
-        $this->client->submitForm('load_referential[save]', $form_data);
+        $this->client->submitForm('load[save]', $form_data);
 
         // Then
         $this->assertEquals(302, $this->client->getResponse()->getStatusCode());
