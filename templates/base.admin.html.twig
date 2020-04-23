@@ -12,9 +12,6 @@
     {{ include('admin/header.html.twig') }}
     {% block body %}{% endblock %}
 </div>
-<script>
-    const referential_api_version = "{{ path('referential', {version: referential_api_version})|escape('js') }}";
-</script>
 {% block javascripts %}
     {{ encore_entry_script_tags('app') }}
 {% endblock %}

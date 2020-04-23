@@ -13,7 +13,6 @@ class ReferentialController extends AbstractFOSRestController
 {
 
     /**
-     * @QueryParam(name="type", description="Referential type (CIM10...)", allowBlank=false)
      * @QueryParam(name="search", description="Search in referential")
      *
      * @param string $type

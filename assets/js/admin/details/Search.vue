@@ -25,7 +25,7 @@
         },
         data: () => {
             return {
-                placeholder: `Rechercher dans ${type}`,
+                placeholder: `Rechercher dans ${referential}`,
                 searchTerm: '',
                 performSearch: false,
                 repositories: [],
@@ -52,7 +52,6 @@
     function search($this) {
         axios.get(referential_api_version, {
             params: {
-                type: type,
                 search: $this.searchTerm
             }
         })

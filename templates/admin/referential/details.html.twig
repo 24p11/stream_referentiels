@@ -11,7 +11,11 @@
 {% block javascripts %}
     {{ parent() }}
     <script>
-        const type = "{{ app.request.get('referential') }}";
+        const referential = "{{ app.request.get('referential') }}";
+        const referential_api_version = "{{ path('referential', {
+            version: referential_api_version,
+            type: app.request.get('referential')
+        })|escape('js') }}";
     </script>
     {{ encore_entry_script_tags('details') }}
 {% endblock %}
