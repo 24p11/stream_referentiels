@@ -97,18 +97,22 @@ class ReferentialController extends AbstractController
 
     private function filterExistingReferential(string $referential, array $repositories): array
     {
-        $new_referential_ids = array_map(function (Referential $referential) {
-            return $referential->getRefId();
-        }, $repositories);
-        $old_referential_ids = $this->getDoctrine()->getRepository(Referential::class)
-            ->whereIn($referential, $new_referential_ids)
-            ->getQuery()
-            ->getResult();
-        $insert_referential_ids = array_diff($new_referential_ids, array_keys($old_referential_ids));
+        return array_reduce($repositories, function (array $accumulator, Referential $referential) {
+            // Get existing referential
+            $existing_referential = $this->getDoctrine()->getRepository(Referential::class)
+                ->findOneBy([
+                    'type' => $referential->getType(),
+                    'refId' => $referential->getRefId(),
+                    'labelHash' => $referential->getLabelHash()
+                ]);
 
-        return array_filter($repositories, function (Referential $referential) use ($insert_referential_ids) {
-            return isset(array_flip($insert_referential_ids)[$referential->getRefId()]);
-        });
+            $is_old = $existing_referential && $existing_referential->getUniqueId() === $referential->getUniqueId();
+            if (!$is_old) {
+                $accumulator[] = $referential;
+            }
+
+            return $accumulator;
+        }, []);
     }
 
     public function details(Request $request, string $referential)

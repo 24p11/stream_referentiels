@@ -35,32 +35,7 @@ class ReferentialRepository extends ServiceEntityRepository
         $searching_words = array_filter($searching_words);
         $searching = implode(' ', $searching_words);
 
-        // TODO
-        // $referential_table_name = get_class(Referential::class);
-        $has_date = !empty($start_date) && !empty($end_date);
-        $metadata_date_condition = $has_date
-            ? "(m.start_date >= '$start_date' AND IFNULL(m.end_date, CURDATE()) <= '$end_date')"
-            : 'CURDATE() BETWEEN m.start_date AND IFNULL(m.end_date, CURDATE())';
-        $referential_date_condition = $has_date
-            ? "(r.start_date >= '$start_date' AND IFNULL(r.end_date, CURDATE()) <= '$end_date')"
-            : "CURDATE() BETWEEN r.start_date AND IFNULL(r.end_date, CURDATE())";
-        $sql = "
-            SELECT *, 
-            r.id as id,
-            r.start_date as referential_start_date, 
-            r.end_date as referential_end_date, 
-            r.created_at as referential_created_at, 
-            r.updated_at as referential_updated_at
-            FROM referential r
-            LEFT JOIN metadata m 
-            ON m.referential_id = r.id AND $metadata_date_condition
-            WHERE r.`type` = :type
-            AND $referential_date_condition
-            AND MATCH (r.ref_id, r.label) AGAINST (:searching IN BOOLEAN MODE)
-            ORDER BY r.score DESC
-            LIMIT 250
-        ";
-
+        $sql = $this->fullTextQuery($start_date, $end_date);
         try {
             $statement = $this->getEntityManager()->getConnection()->prepare($sql);
             $statement->execute([
@@ -93,9 +68,46 @@ class ReferentialRepository extends ServiceEntityRepository
         return null;
     }
 
+    private function fullTextQuery($start_date, $end_date): string
+    {
+        // TODO
+        // $referential_table_name = get_class(Referential::class);
+        $start_date = $this->escape($start_date);
+        $end_date = $this->escape($end_date);
+        $has_date = !empty($start_date) && !empty($end_date);
+        $metadata_date_condition = $has_date
+            ? "(m.start_date >= '$start_date' AND IFNULL(m.end_date, CURDATE()) <= '$end_date')"
+            : 'CURDATE() BETWEEN m.start_date AND IFNULL(m.end_date, CURDATE())';
+        $referential_date_condition = $has_date
+            ? "(r.start_date >= '$start_date' AND IFNULL(r.end_date, CURDATE()) <= '$end_date')"
+            : "CURDATE() BETWEEN r.start_date AND IFNULL(r.end_date, CURDATE())";
+
+        return "
+            SELECT *, 
+            r.id as id,
+            r.start_date as referential_start_date, 
+            r.end_date as referential_end_date, 
+            r.created_at as referential_created_at, 
+            r.updated_at as referential_updated_at
+            FROM referential r
+            LEFT JOIN metadata m 
+            ON m.referential_id = r.id AND $metadata_date_condition
+            WHERE r.`type` = :type
+            AND $referential_date_condition
+            AND MATCH (r.ref_id, r.label) AGAINST (:searching IN BOOLEAN MODE)
+            ORDER BY r.score DESC
+            LIMIT 250
+            ";
+    }
+
+    private function escape(string $param): string
+    {
+        return addslashes(htmlentities($param));
+    }
+
     private function groupByRefId(array $accumulator, array $referential)
     {
-        $referential_key = $referential['ref_id'];
+        $referential_key = $referential['ref_id'] . $referential['label_hash'];
         $metadata_key = 'metadata';
         if (isset($accumulator[$referential_key])) {
             $accumulator[$referential_key][$metadata_key][] = [
@@ -107,7 +119,7 @@ class ReferentialRepository extends ServiceEntityRepository
             $accumulator[$referential_key] = [
                 'id' => $referential['id'],
                 'type' => $referential['type'],
-                'ref_id' => $referential_key,
+                'ref_id' => $referential['ref_id'],
                 'label' => $referential['label'],
                 'start_date' => $referential['referential_start_date'],
                 'end_date' => $referential['referential_end_date'],

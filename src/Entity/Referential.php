@@ -7,7 +7,18 @@ use Doctrine\ORM\Mapping as ORM;
 /**
  * Repositories
  *
- * @ORM\Table(name="referential", uniqueConstraints={@ORM\UniqueConstraint(name="ref_id_type", columns={"ref_id", "type"})}, indexes={@ORM\Index(name="created_at", columns={"created_at"}), @ORM\Index(name="ref_id_label", columns={"ref_id", "label"}, flags={"fulltext"}), @ORM\Index(name="end_date", columns={"end_date"}), @ORM\Index(name="fk_repositories_referential_types1_idx", columns={"id"}), @ORM\Index(name="ref_id", columns={"ref_id"}), @ORM\Index(name="score", columns={"score"}), @ORM\Index(name="start_date", columns={"start_date"}), @ORM\Index(name="updated_at", columns={"updated_at"})})
+ * @ORM\Table(name="referential",
+ *     uniqueConstraints={@ORM\UniqueConstraint(name="ref_id_type_lhash", columns={"ref_id", "type", "label_hash"})},
+ *     indexes={
+ *     @ORM\Index(name="created_at", columns={"created_at"}),
+ *     @ORM\Index(name="ref_id_label", columns={"ref_id", "label"}, flags={"fulltext"}),
+ *     @ORM\Index(name="end_date", columns={"end_date"}),
+ *     @ORM\Index(name="fk_repositories_referential_types1_idx", columns={"id"}),
+ *     @ORM\Index(name="ref_id", columns={"ref_id"}),
+ *     @ORM\Index(name="score", columns={"score"}),
+ *     @ORM\Index(name="start_date", columns={"start_date"}),
+ *     @ORM\Index(name="updated_at", columns={"updated_at"})
+ *     })
  * @ORM\Entity(repositoryClass="App\Repository\ReferentialRepository")
  */
 class Referential
@@ -34,6 +45,13 @@ class Referential
      * @ORM\Column(name="label", type="string", length=255, nullable=false)
      */
     private $label;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="label_hash", type="string", length=32, nullable=false, columnDefinition="CHAR(32) NOT NULL")
+     */
+    private $labelHash;
 
     /**
      * @var int
@@ -70,6 +88,8 @@ class Referential
      */
     private $updatedAt;
 
+    private $uniqueId;
+
     /**
      * @var \ReferentialTypes
      *
@@ -94,18 +114,6 @@ class Referential
         return $this->id;
     }
 
-    public function getRefId(): ?string
-    {
-        return $this->refId;
-    }
-
-    public function setRefId(string $refId): self
-    {
-        $this->refId = $refId;
-
-        return $this;
-    }
-
     public function getLabel(): ?string
     {
         return $this->label;
@@ -114,6 +122,7 @@ class Referential
     public function setLabel(string $label): self
     {
         $this->label = $label;
+        $this->labelHash = md5($label);
 
         return $this;
     }
@@ -178,6 +187,14 @@ class Referential
         return $this;
     }
 
+    /**
+     * @return mixed
+     */
+    public function getUniqueId()
+    {
+        return $this->getType()->getId() . $this->getRefId() . $this->getLabelHash();
+    }
+
     public function getType(): ?ReferentialType
     {
         return $this->type;
@@ -188,6 +205,26 @@ class Referential
         $this->type = $type;
 
         return $this;
+    }
+
+    public function getRefId(): ?string
+    {
+        return $this->refId;
+    }
+
+    public function setRefId(string $refId): self
+    {
+        $this->refId = $refId;
+
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getLabelHash(): string
+    {
+        return $this->labelHash;
     }
 
     public function __toString()
