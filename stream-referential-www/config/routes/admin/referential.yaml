@@ -18,10 +18,6 @@ admin_referential_manage:
   path: /manage/{referential}
   controller: App\Controller\Admin\ReferentialController::manage
 
-admin_referential_load:
-  path: /load/{referential}
-  controller: App\Controller\Admin\ReferentialController::load
-
 admin_referential_details:
   path: /details/{referential}
   controller: App\Controller\Admin\ReferentialController::details
