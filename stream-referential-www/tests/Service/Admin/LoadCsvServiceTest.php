@@ -6,7 +6,7 @@ use App\Entity\ReferentialType;
 use Doctrine\ORM\ORMException;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
-class client extends WebTestCase
+class LoadCsvServiceTest extends WebTestCase
 {
     private $client;
 
