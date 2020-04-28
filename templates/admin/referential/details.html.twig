@@ -12,7 +12,7 @@
     {{ parent() }}
     <script>
         const referential = "{{ app.request.get('referential') }}";
-        const referential_api_version = "{{ path('referential', {
+        const referentialApiVersion = "{{ path('referential', {
             version: referential_api_version,
             type: app.request.get('referential')
         })|escape('js') }}";

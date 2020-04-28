@@ -57,10 +57,10 @@ class LoadCsvService
         }
 
         $file = $this->uploadDirectory . DIRECTORY_SEPARATOR . $filename;
-        $csv_data = array_map([$this, 'lineToArray'], explode("\n", file_get_contents($file)));
+        $csvData = array_map([$this, 'lineToArray'], explode("\n", file_get_contents($file)));
         unlink($file);
 
-        return $csv_data;
+        return $csvData;
     }
 
     private function lineToArray(string $line)

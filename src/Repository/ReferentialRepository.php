@@ -4,8 +4,6 @@ namespace App\Repository;
 
 use App\Entity\Referential;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
-use Doctrine\DBAL\DBALException;
-use Doctrine\ORM\QueryBuilder;
 use Doctrine\Persistence\ManagerRegistry;
 use Transliterator;
 
@@ -16,40 +14,31 @@ class ReferentialRepository extends ServiceEntityRepository
         parent::__construct($registry, Referential::class);
     }
 
-    public function whereIn(string $referential, array $ids): QueryBuilder
-    {
-        return $this->createQueryBuilder('r', 'r.refId')
-            ->where('r.type = :referential')
-            ->setParameter(':referential', $referential)
-            ->andWhere('r.refId IN (:ids)')
-            ->setParameter('ids', $ids);
-    }
-
-    public function fullTextSearch(string $type, string $search_text, string $start_date, string $end_date): array
+    public function fullTextSearch(string $type, string $search_text, string $startDate, string $endDate): array
     {
 
         $transliterator = Transliterator::create('NFD; [:Nonspacing Mark:] Remove; NFC;');
-        $searching_words = array_map(function ($word) use ($transliterator) {
+        $searchingWords = array_map(function ($word) use ($transliterator) {
             return $this->fullTextExpression($word, $transliterator);
         }, preg_split("/\s|, /", $search_text));
-        $searching_words = array_filter($searching_words);
-        $searching = implode(' ', $searching_words);
+        $searchingWords = array_filter($searchingWords);
+        $searching = implode(' ', $searchingWords);
 
-        $sql = $this->fullTextQuery($start_date, $end_date);
-        try {
-            $statement = $this->getEntityManager()->getConnection()->prepare($sql);
-            $statement->execute([
-                'type' => $type,
-                'searching' => $searching,
-            ]);
 
-            $repositories = $statement->fetchAll();
-            return array_values(array_reduce($repositories, function (array $accumulator, array $referential) {
-                return $this->groupByRefId($accumulator, $referential);
-            }, []));
-        } catch (DBALException $e) {
-            dump($e);
-        }
+        return $this->createQueryBuilder('r')
+            ->select([
+                'r', 'm', 't'
+            ])
+            ->join('r.type', 't')
+            ->leftJoin('r.metadata', 'm')
+            ->where('MATCH_AGAINST (r.refId, r.label) AGAINST (:searching  boolean) > 0')
+            ->andWhere('r.type = :type')
+            ->orderBy('r.score', 'DESC')
+            ->setMaxResults(250)
+            ->setParameter('type', $type)
+            ->setParameter('searching', $searching)
+            ->getQuery()
+            ->getResult();
     }
 
     private function fullTextExpression(string $word, Transliterator $transliterator): ?string
@@ -103,40 +92,5 @@ class ReferentialRepository extends ServiceEntityRepository
     private function escape(string $param): string
     {
         return addslashes(htmlentities($param));
-    }
-
-    private function groupByRefId(array $accumulator, array $referential)
-    {
-        $referential_key = $referential['ref_id'] . $referential['label_hash'];
-        $metadata_key = 'metadata';
-        if (isset($accumulator[$referential_key])) {
-            $accumulator[$referential_key][$metadata_key][] = [
-                $referential['entry'] => $referential['value'],
-                'start_date' => $referential['start_date'],
-                'end_date' => $referential['end_date'],
-            ];
-        } else {
-            $accumulator[$referential_key] = [
-                'id' => $referential['id'],
-                'type' => $referential['type'],
-                'ref_id' => $referential['ref_id'],
-                'label' => $referential['label'],
-                'start_date' => $referential['referential_start_date'],
-                'end_date' => $referential['referential_end_date'],
-                'created_at' => $referential['referential_created_at'],
-                'updated_at' => $referential['referential_updated_at'],
-            ];
-
-            // If metadata
-            if ($referential['entry']) {
-                $accumulator[$referential_key][$metadata_key][] = [
-                    $referential['entry'] => $referential['value'],
-                    'start_date' => $referential['start_date'],
-                    'end_date' => $referential['end_date'],
-                ];
-            }
-        }
-
-        return $accumulator;
     }
 }

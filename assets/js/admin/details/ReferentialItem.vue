@@ -27,14 +27,14 @@
         },
         methods: {
             display() {
-                if (this.referential.metadata) {
+                if (this.referential.metadata.length) {
                     this.show = !this.show
                 }
             }
         },
         computed: {
             hasMetadata: function () {
-                return this.referential.metadata
+                return this.referential.metadata.length
                     ? 'text-primary'
                     : 'text-secondary'
             }

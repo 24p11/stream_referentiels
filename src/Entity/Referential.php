@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
@@ -25,7 +26,6 @@ class Referential
 {
     /**
      * @var int
-     *
      * @ORM\Column(name="id", type="integer", nullable=false, options={"unsigned"=true})
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="IDENTITY")
@@ -88,17 +88,18 @@ class Referential
      */
     private $updatedAt;
 
-    private $uniqueId;
-
     /**
-     * @var \ReferentialTypes
-     *
      * @ORM\ManyToOne(targetEntity="ReferentialType")
      * @ORM\JoinColumns({
      *   @ORM\JoinColumn(name="type", referencedColumnName="id")
      * })
      */
     private $type;
+
+    /**
+     * @ORM\OneToMany(targetEntity="App\Entity\Metadata", mappedBy="referential")
+     */
+    private $metadata;
 
     /**
      * ReferentialTypes constructor.
@@ -187,20 +188,17 @@ class Referential
         return $this;
     }
 
-    /**
-     * @return mixed
-     */
     public function getUniqueId()
     {
-        return $this->getType()->getId() . $this->getRefId() . $this->getLabelHash();
+        return $this->getType() . $this->getRefId() . $this->getLabelHash();
     }
 
-    public function getType(): ?ReferentialType
+    public function getType(): string
     {
-        return $this->type;
+        return $this->type->getId();
     }
 
-    public function setType(?ReferentialType $type): self
+    public function setType(ReferentialType $type): self
     {
         $this->type = $type;
 
@@ -219,12 +217,21 @@ class Referential
         return $this;
     }
 
-    /**
-     * @return string
-     */
     public function getLabelHash(): string
     {
         return $this->labelHash;
+    }
+
+    public function getMetadata(): ?Collection
+    {
+        return $this->metadata;
+    }
+
+    public function setMetadata(?Collection $metadata): self
+    {
+        $this->metadata = $metadata;
+
+        return $this;
     }
 
     public function __toString()

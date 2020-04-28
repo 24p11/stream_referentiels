@@ -50,8 +50,8 @@ class ReferentialController extends AbstractController
     public function edit(Request $request, string $referential)
     {
         $em = $this->getDoctrine()->getManager();
-        $referential_type = $em->getRepository(ReferentialType::class)->findOneBy(['id' => $referential]);
-        $form = $this->createForm(AddType::class, $referential_type);
+        $referentialType = $em->getRepository(ReferentialType::class)->findOneBy(['id' => $referential]);
+        $form = $this->createForm(AddType::class, $referentialType);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
@@ -81,11 +81,13 @@ class ReferentialController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $referential_csv = $form->get('csv')->getData();
-            if ($referential_csv) {
+            $referentialCsv = $form->get('csv')->getData();
+            if ($referentialCsv) {
                 $em = $this->getDoctrine()->getManager();
-                $referential_types = $em->getRepository(ReferentialType::class)->findOneBy(['id' => $referential]);
-                $repositories = $loadCsvService->toRepositories($referential_csv, $referential_types);
+                $referentialTypes = $em->getRepository(ReferentialType::class)->findOneBy(['id' => $referential]);
+                $repositories = $loadCsvService->toRepositories($referentialCsv, $referentialTypes);
+                // Detect create & update & delete
+
                 $repositories = $this->filterExistingReferential($referential, $repositories);
                 array_walk($repositories, [$em, 'persist']);
                 $em->flush();
@@ -99,15 +101,15 @@ class ReferentialController extends AbstractController
     {
         return array_reduce($repositories, function (array $accumulator, Referential $referential) {
             // Get existing referential
-            $existing_referential = $this->getDoctrine()->getRepository(Referential::class)
+            $existingReferential = $this->getDoctrine()->getRepository(Referential::class)
                 ->findOneBy([
                     'type' => $referential->getType(),
                     'refId' => $referential->getRefId(),
                     'labelHash' => $referential->getLabelHash()
                 ]);
 
-            $is_old = $existing_referential && $existing_referential->getUniqueId() === $referential->getUniqueId();
-            if (!$is_old) {
+            $isOld = $existingReferential && $existingReferential->getUniqueId() === $referential->getUniqueId();
+            if (!$isOld) {
                 $accumulator[] = $referential;
             }
 
