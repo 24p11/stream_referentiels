@@ -14,13 +14,14 @@ class ReferentialRepository extends ServiceEntityRepository
         parent::__construct($registry, Referential::class);
     }
 
-    public function fullTextSearch(string $type, string $search_text, string $startDate, string $endDate): array
+    // TODO use dates then remove fullTextQuery method
+    public function fullTextSearch(string $type, string $searchText, string $startDate, string $endDate): array
     {
 
         $transliterator = Transliterator::create('NFD; [:Nonspacing Mark:] Remove; NFC;');
         $searchingWords = array_map(function ($word) use ($transliterator) {
             return $this->fullTextExpression($word, $transliterator);
-        }, preg_split("/\s|, /", $search_text));
+        }, preg_split("/\s|, /", $searchText));
         $searchingWords = array_filter($searchingWords);
         $searching = implode(' ', $searchingWords);
 
@@ -45,7 +46,7 @@ class ReferentialRepository extends ServiceEntityRepository
     {
         $word = addslashes(mb_strtolower($transliterator->transliterate($word)));
         if (false === empty($word)) {
-            if (1 === preg_match('/[\+\-\~\*]/', $word)) {
+            if (1 === preg_match('/[+\-~*]/', $word)) {
                 return '+"' . $word . '" ';
             } else if (strpos($word, "'")) {
                 return '+(' . $word . '*) ';
